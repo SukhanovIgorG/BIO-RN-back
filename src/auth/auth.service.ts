@@ -24,7 +24,7 @@ export class AuthService {
       expiresIn: '7d',
     });
 
-    this.usersService.updateRefreshToken(user.id, refreshToken);
+    await this.usersService.updateRefreshToken(user.id, refreshToken);
 
     if (!user) {
       throw new UnauthorizedException();
