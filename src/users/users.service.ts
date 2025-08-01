@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterAuthDto } from 'src/auth/dto/register-auth.dto';
+import { RegisterAuthDto } from '../auth/dto/register-auth.dto';
 
 import * as bcrypt from 'bcrypt';
 
