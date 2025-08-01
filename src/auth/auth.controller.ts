@@ -33,8 +33,6 @@ export class AuthController {
     @Body() registerAuthDto: RegisterAuthDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    console.log('registerAuthDto :>> ', registerAuthDto);
-
     const { accessToken, refreshToken, user } =
       await this.authService.register(registerAuthDto);
 
@@ -45,7 +43,13 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return { accessToken, user };
+    const serializedUser = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
+
+    return { accessToken, user: serializedUser };
   }
 
   @HttpCode(HttpStatus.OK)
@@ -54,10 +58,8 @@ export class AuthController {
     @Body() loginAuthDto: LoginAuthDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    console.log('loginAuthDto :>> ', loginAuthDto);
     const { accessToken, refreshToken, user } =
       await this.authService.login(loginAuthDto);
-    console.log('{ accessToken, user } :>> ', { accessToken, user });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -66,9 +68,13 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    console.log('{ accessToken, user } :>> ', { accessToken, user });
+    const serializedUser = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
 
-    return { accessToken, user };
+    return { accessToken, user: serializedUser };
   }
 
   @HttpCode(HttpStatus.OK)
@@ -78,7 +84,6 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const reqRefreshToken = req.cookies['refreshToken'];
-    console.log('reqRefreshToken :>> ', reqRefreshToken);
     if (!reqRefreshToken) {
       throw new UnauthorizedException('Refresh token not found');
     }
@@ -91,6 +96,13 @@ export class AuthController {
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    return { accessToken, user };
+
+    const serializedUser = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
+
+    return { accessToken, user: serializedUser };
   }
 }
