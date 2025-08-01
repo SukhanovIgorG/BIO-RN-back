@@ -33,6 +33,12 @@ export class AuthController {
     @Body() registerAuthDto: RegisterAuthDto,
     @Res({ passthrough: true }) res: Response,
   ) {
+    const existingUser = await this.authService.checkExistingUser(
+      registerAuthDto.email,
+    );
+
+    if (existingUser) throw new UnauthorizedException('User already exists');
+
     const { accessToken, refreshToken, user } =
       await this.authService.register(registerAuthDto);
 
@@ -67,6 +73,11 @@ export class AuthController {
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    if (!user) {
+      console.log('User not found');
+      throw new UnauthorizedException('User not found');
+    }
 
     const serializedUser = {
       id: user.id,

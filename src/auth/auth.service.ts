@@ -61,6 +61,11 @@ export class AuthService {
     return await this.getAuth(user);
   }
 
+  async checkExistingUser(email: string) {
+    const user = await this.usersService.findByEmail(email);
+    return user;
+  }
+
   async refresh(refreshToken: string) {
     const user = await this.usersService.findByRefreshToken(refreshToken);
     if (!user) {
