@@ -1,24 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterAuthDto } from 'src/auth/dto/register-auth.dto';
+import { RegisterAuthDto } from '../auth/dto/register-auth.dto';
 
 import * as bcrypt from 'bcrypt';
 
-import { type User } from 'types';
 import { bcryptConstant } from './constants';
-import { MOCK_USERS } from './mocks';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = MOCK_USERS;
+  constructor(
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
+  ) {}
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async findByEmail(email: string): Promise<User | undefined> {
-    return this.users.find((user) => user.email === email);
+    const user = await this.userRepo.findOne({ where: { email } });
+    return user || undefined;
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async findByRefreshToken(refreshToken: string): Promise<User | undefined> {
-    return this.users.find((user) => user.refreshToken === refreshToken);
+    const user = await this.userRepo.findOne({ where: { refreshToken } });
+    return user || undefined;
   }
 
   async create(dto: RegisterAuthDto): Promise<User> {
@@ -26,25 +30,24 @@ export class UsersService {
       dto.password,
       bcryptConstant.saltOrRounds,
     );
-    const newUser: Omit<User, 'id'> = {
+    const newUser = {
       email: dto.email,
       password: hashPassword,
       username: dto.username,
-      refreshToken: undefined,
+      refreshToken: null,
     };
-    const createdUser = { ...newUser, id: this.users.length + 1 };
-    this.users.push(createdUser);
+    const createdUser = await this.userRepo.save(newUser);
     return createdUser;
   }
 
-  updateRefreshToken(userId: number, refreshToken: string): void {
-    const user = this.users.find((user) => user.id === userId);
-    if (user) {
-      user.refreshToken = refreshToken;
-    }
+  async updateRefreshToken(
+    userId: string,
+    refreshToken: string,
+  ): Promise<void> {
+    await this.userRepo.update(userId, { refreshToken });
   }
 
-  getUsersList(): User[] {
-    return this.users;
+  async getUsersList(): Promise<User[]> {
+    return this.userRepo.find();
   }
 }

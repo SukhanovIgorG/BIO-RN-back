@@ -4,8 +4,8 @@ import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
 
 import { type User } from 'types';
-import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { UsersService } from '../users/users.service';
 @Injectable()
 export class AuthService {
   constructor(
@@ -24,7 +24,7 @@ export class AuthService {
       expiresIn: '7d',
     });
 
-    this.usersService.updateRefreshToken(user.id, refreshToken);
+    await this.usersService.updateRefreshToken(user.id, refreshToken);
 
     if (!user) {
       throw new UnauthorizedException();

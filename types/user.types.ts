@@ -1,7 +1,7 @@
 export type User = {
-  id: number;
+  id: string;
   username: string;
   email: string;
   password: string;
-  refreshToken?: string;
+  refreshToken?: string | null;
 };
