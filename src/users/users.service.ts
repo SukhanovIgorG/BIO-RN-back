@@ -5,19 +5,11 @@ import * as bcrypt from 'bcrypt';
 
 import { type User } from 'types';
 import { bcryptConstant } from './constants';
+import { MOCK_USERS } from './mocks';
 
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = [
-    {
-      id: 1,
-      username: 'igoreks_91',
-      email: 'igoreks_91@mail.ru',
-      password: '$2b$10$eN8Jf3tone4RGBp53/6RBucBwz6ahLhCCxNyWZOlewCrLA0FANyse',
-      refreshToken: undefined,
-      roles: ['admin'],
-    },
-  ];
+  private readonly users: User[] = MOCK_USERS;
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async findByEmail(email: string): Promise<User | undefined> {
@@ -34,11 +26,10 @@ export class UsersService {
       dto.password,
       bcryptConstant.saltOrRounds,
     );
-    const newUser = {
+    const newUser: Omit<User, 'id'> = {
       email: dto.email,
       password: hashPassword,
-      roles: ['user'],
-      username: 'username',
+      username: dto.username,
       refreshToken: undefined,
     };
     const createdUser = { ...newUser, id: this.users.length + 1 };
@@ -51,5 +42,9 @@ export class UsersService {
     if (user) {
       user.refreshToken = refreshToken;
     }
+  }
+
+  getUsersList(): User[] {
+    return this.users;
   }
 }
