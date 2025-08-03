@@ -9,6 +9,7 @@ import {
   Req,
   Request,
   ValidationPipe,
+  Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -26,6 +27,7 @@ interface RequestWithCookies extends Request {
 
 @Controller('api/auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
   constructor(private readonly authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
@@ -81,7 +83,7 @@ export class AuthController {
     });
 
     if (!user) {
-      console.log('User not found');
+      this.logger.error('User not found', loginAuthDto);
       throw new UnauthorizedException('User not found');
     }
 
