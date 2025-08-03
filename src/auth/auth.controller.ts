@@ -10,6 +10,7 @@ import {
   Request,
   ValidationPipe,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -36,16 +37,11 @@ export class AuthController {
     @Body(new ValidationPipe()) registerAuthDto: RegisterAuthDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // const { email, password, username } = registerAuthDto;
-
-    // if (!email || !password || !username)
-    //   throw new BadRequestException('Missing required fields');
-
     const existingUser = await this.authService.checkExistingUser(
       registerAuthDto.email,
     );
 
-    if (existingUser) throw new UnauthorizedException('User already exists');
+    if (existingUser) throw new BadRequestException('User already exists');
 
     const { accessToken, refreshToken, user } =
       await this.authService.register(registerAuthDto);
