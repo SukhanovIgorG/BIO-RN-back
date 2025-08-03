@@ -19,3 +19,5 @@ yarn start:dev
 
 Запуск в режиме продакшена
 yarn start:prod
+
+Описание эндпонтов доступно на http://localhost:3000/swagger
