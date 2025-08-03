@@ -15,8 +15,6 @@ async function bootstrap() {
     .setTitle('User service API')
     .setDescription('API для авторизации и просмотра пользователей')
     .setVersion('1.0')
-    .addTag('auth')
-    .addTag('users')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory);
