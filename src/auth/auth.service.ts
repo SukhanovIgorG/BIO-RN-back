@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -8,6 +13,8 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -42,9 +49,10 @@ export class AuthService {
       registerAuthDto.email,
     );
     if (existingUser) {
-      throw new UnauthorizedException('User already exists');
+      throw new BadRequestException('User already exists');
     }
     const user = await this.usersService.create(registerAuthDto);
+    this.logger.log(`User created: ${user.email}`);
     return await this.getAuth(user);
   }
 
@@ -57,7 +65,7 @@ export class AuthService {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) throw new UnauthorizedException();
-
+    this.logger.log(`User logged in: ${user.email}`);
     return await this.getAuth(user);
   }
 
