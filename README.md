@@ -14,10 +14,24 @@ POSTGRES_PASSWORD=0000
 POSTGRES_DB=nest_auth_db
 ```
 
+2. Запустить
+
 Запуск в режиме разработки
-yarn start:dev
+
+```
+yarn docker:dev
+```
 
 Запуск в режиме продакшена
-yarn start:prod
+
+```
+yarn docker:prod
+```
+
+Остановить сервис
+
+```
+yarn docker:down
+```
 
 Описание эндпонтов доступно на http://localhost:3000/swagger
